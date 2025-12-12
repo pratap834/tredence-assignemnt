@@ -3,13 +3,14 @@ from app.engine.node import Node
 from app.engine.state import WorkflowState
 from app.engine.graph import WorkflowGraph
 
-def test_node_execution():
+@pytest.mark.asyncio
+async def test_node_execution():
     def add_value(state):
         return {"count": state.get("count", 0) + 1}
     
     node = Node(name="increment", func=add_value)
     state = WorkflowState(data={"count": 0})
-    result = node.execute(state)
+    result = await node.execute(state)
     
     assert result.data["count"] == 1
 

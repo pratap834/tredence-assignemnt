@@ -86,6 +86,24 @@ Response includes:
 - `execution_log` - Step-by-step execution details
 - `metadata` - Run statistics (iterations, completion status)
 
+### Run a workflow in background
+
+For long-running workflows, use async execution:
+
+```bash
+curl -X POST "http://localhost:8000/graph/run-async" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "graph_id": "abc-123-def",
+    "initial_state": {
+      "code": "...",
+      "quality_threshold": 75
+    }
+  }'
+```
+
+Returns immediately with `run_id`. Check status with `GET /graph/state/{run_id}`.
+
 ### Get workflow state
 
 ```bash
@@ -151,20 +169,43 @@ Interactive API docs available at:
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
 
+## Testing
+
+Run the test suite:
+
+```bash
+pip install pytest pytest-asyncio
+pytest tests/ -v
+```
+
+The test suite includes:
+- **Unit tests** - Node execution, state management, graph logic
+- **Integration tests** - Graph branching, looping, error handling
+- **API tests** - All endpoints with various scenarios
+
+Coverage includes:
+- Linear workflow execution
+- Conditional branching
+- Loop termination and max iteration safety
+- Error handling and recovery
+- API contract validation
+
 ## What Could Be Improved
 
 With more time, I would add:
 
-- **Persistence** - SQLite/Postgres for graph and run storage
-- **WebSocket streaming** - Real-time execution updates
-- **Async node execution** - Background tasks for long-running nodes
-- **Better error handling** - Retry logic and error recovery
-- **Monitoring** - Execution metrics and performance tracking
-- **More workflows** - Text summarization, data quality pipelines
-- **Graph visualization** - Visual workflow builder
-- **Node composition** - Reusable sub-workflows
-- **Authentication** - API key management
-- **Rate limiting** - Request throttling
+- **Persistent storage** - PostgreSQL or Redis for production deployments
+- **WebSocket streaming** - Real-time step-by-step execution logs
+- **Comprehensive testing** - Property-based tests, load testing, mutation testing
+- **Better error handling** - Retry policies, circuit breakers, timeout management
+- **Observability** - Structured logging, metrics (Prometheus), distributed tracing (OpenTelemetry)
+- **More workflows** - Text summarization pipeline, data quality checker, document processing
+- **Graph visualization** - Visual workflow designer and execution monitor
+- **Node composition** - Reusable sub-workflows and workflow templates
+- **Security** - Authentication (JWT), rate limiting, input validation, sandboxed execution
+- **Scalability** - Distributed execution with Celery/RQ, horizontal scaling
+- **Database migrations** - Alembic for schema versioning
+- **Docker deployment** - Multi-stage builds, docker-compose orchestration
 
 ## Example Request
 
